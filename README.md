@@ -8,11 +8,18 @@ A custom-built ESP32-based project using 14-segment hex displays to show real-ti
 - Controlled with 7 physical buttons
 - Runs on battery with power management
 
+## Current Modes
+- Temperature from 2 i2c sensors
+- Real time clock accurate to ~1 second
+- Stock Price for any ticker symbol you input
+- Chess clock with 5 differet base times and increment
+
 ## Photos
 Finished Board!
 ![Board Assembled](Photos/finished.jpg)
 
 Shows live temperature readings in [temperature testing video](Photos/TempTesting.mp4)
+
 ![Temperature Readings](Photos/TempTestingGif.gif)
 
 ## Code Overview
