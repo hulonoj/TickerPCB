@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "TickerPCB-altium-import")(type "KiCad")(uri "${KIPRJMOD}/TickerPCB-altium-import.kicad_sym")(options "")(descr ""))
+)
