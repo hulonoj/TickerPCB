@@ -22,6 +22,11 @@ Shows live temperature readings in [temperature testing video](Photos/TempTestin
 
 ![Temperature Readings](Photos/TempTestingGif.gif)
 
+Schematic and Layout
+![Schematic](Photos/TickerPCBSchematic.png)
+
+
+![Layout](Photos/LayoutKiCad.png)
 ## Code Overview
 Firmware is written in C++ and manages:
 - I2C communication with display drivers
