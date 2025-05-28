@@ -436,7 +436,9 @@ void STATE_Clock() {
   static int hours = 0;
   static int minutes = 0;
   static int seconds = 0;
+  static int timeZone = 0;
   static bool showColon = true;
+  static bool militaryTime = true;
 
   switch (*localState) {
     case 0: // Startup
@@ -468,12 +470,53 @@ void STATE_Clock() {
       delay(2000);
       (*localState)++;
 
-    case 3: // Display clock continuously
+    case 3:
+      // Write "EST" to the displays
+      timeZone = 0;
+      lastNtpSync = 0; // set sync time to be outdated so it gets synced.
+      clearDisplay();
+      writeDisplay("EST");
+      delay(1000);
+      clearDisplay();
+      (*localState)= 7;
+      break;
+    case 4:
+      // Write "CST" to the displays
+      timeZone = 1;
+      lastNtpSync = 0; // set sync time to be outdated so it gets synced.
+      clearDisplay();
+      writeDisplay("CST");
+      delay(1000);
+      clearDisplay();
+      (*localState) = 7;
+      break;
+    case 5:
+      // Write "PST" to the displays
+      timeZone = 2;
+      lastNtpSync = 0; // set sync time to be outdated so it gets synced.
+      clearDisplay();
+      writeDisplay("MST");
+      delay(1000);
+      clearDisplay();
+      (*localState) = 7;
+      break;
+    case 6:
+      // Write "PST" to the displays
+      timeZone = 3;
+      lastNtpSync = 0; // set sync time to be outdated so it gets synced.
+      clearDisplay();
+      writeDisplay("PST");
+      delay(1000);
+      clearDisplay();
+      (*localState) = 7;
+      break;
+    case 7:  // Display clock continuously
+
       // Sync time from NTP every 10 seconds
       if (millis() - lastNtpSync >= 10000 || lastNtpSync == 0) {
         lastNtpSync = millis();
         timeClient.update();
-        hours = timeClient.getHours();
+        hours = timeClient.getHours() - timeZone;
         minutes = timeClient.getMinutes();
         seconds = timeClient.getSeconds();
       }
@@ -494,30 +537,70 @@ void STATE_Clock() {
         if (hours >= 24) {
           hours = 0;
         }
+        if (hours < 0){
+          hours = 24 + hours;
+        }
 
-        // Format: HH:MM:SS
-        writeChar(7, '0' + (hours / 10), false);
-        writeChar(6, '0' + (hours % 10), showColon); // colon after HH
-        writeChar(5, '0' + (minutes / 10), false);
-        writeChar(4, '0' + (minutes % 10), showColon); // colon after MM
-        writeChar(3, '0' + (seconds / 10), false);
-        writeChar(2, '0' + (seconds % 10), false);
-        writeChar(1, ' ', false);
-        writeChar(0, ' ', false);
+        if(militaryTime){
 
-        showColon = !showColon;
+          // Format: HH:MM:SS
+          writeChar(7, '0' + (hours / 10), false);
+          writeChar(6, '0' + (hours % 10), showColon); // colon after HH
+          writeChar(5, '0' + (minutes / 10), false);
+          writeChar(4, '0' + (minutes % 10), showColon); // colon after MM
+          writeChar(3, '0' + (seconds / 10), false);
+          writeChar(2, '0' + (seconds % 10), false);
+          writeChar(1, ' ', false);
+          writeChar(0, ' ', false);
+          
+          showColon = !showColon;
+        }else{
+          
+          // Convert to 12-hour format
+          bool isPM = false;
+          int displayHour = hours;
+          
+          if (displayHour >= 12) isPM = true;
+          if (displayHour == 0) displayHour = 12;
+          else if (displayHour > 12) displayHour -= 12;
+          
+          // Format: HH:MM AM or PM
+          writeChar(7, '0' + (displayHour / 10), false);            // Tens digit of hour
+          writeChar(6, '0' + (displayHour % 10), showColon);        // Ones digit + colon
+          writeChar(5, '0' + (minutes / 10), false);                // Tens digit of minutes
+          writeChar(4, '0' + (minutes % 10), false);                // Ones digit of minutes
+          writeChar(3, isPM ? 'P' : 'A', false);                    // 'P' or 'A'
+          writeChar(2, 'M', false);                                 // 'M'
+          writeChar(1, ' ', false);
+          writeChar(0, ' ', false);
+          
+          showColon = !showColon;
+        }
       }
       if (GLOBAL_ENTER_HIT) {
         GLOBAL_ENTER_HIT = false;
-        (*localState) = 1; // Go back to clock title screen
-        writeDisplay("Clock");
+        switch(timeZone){
+          case 0: (*localState) = 4; break;
+          case 1: (*localState) = 5; break;
+          case 2: (*localState) = 6; break;
+          default: timeZone = 0; (*localState) = 3; break;
+        }
+        clearDisplay();
         delay(100);
       }
-
+      if (GLOBAL_BUTTONS_UPDATED){
+        for(int buttonNumber = 0; buttonNumber <= 5; buttonNumber++){
+          if(GLOBAL_BUTTONS_DATA[buttonNumber]){
+            // If we hit any button, toggle military time
+            militaryTime = !militaryTime;
+          }
+        }
+      }
       break;
 
     default:
       (*localState) = 0;
+      timeZone = 0;
       break;
   }
 }

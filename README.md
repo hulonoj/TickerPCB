@@ -16,11 +16,13 @@ A custom-built ESP32-based project using 14-segment hex displays to show real-ti
 
 ## Photos
 Finished Board!
-![Board Assembled](Photos/finished.jpg)
 
-Shows live temperature readings in [temperature testing video](Photos/TempTesting.mp4)
+<img src="Photos/finished.jpg" width="800" height="400" />
+
+Shows live temperature readings in [temperature testing video](Photos/TempTesting.mp4) and accurate clock in [clock testing video](Photos/ClockTesting.mp4)
 
 ![Temperature Readings](Photos/TempTestingGif.gif)
+![Clock Time](Photos/ClockTestingGif.gif)
 
 Schematic and Layout
 ![Schematic](Photos/TickerPCBSchematic.png)

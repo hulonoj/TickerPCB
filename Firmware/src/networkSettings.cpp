@@ -160,8 +160,7 @@ bool setup_Wifi(){
   }else{
     writeDisplay("SUCCESS");
     GLOBAL_WIFI_CONNECTED = true;
-    delay(1500);
-    clearDisplay();
+    delay(500);
   }
   Serial.println("CONNECTED TO WIFI");
   timeClient.begin();
