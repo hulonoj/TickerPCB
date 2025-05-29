@@ -1,6 +1,7 @@
-# ESP32 14-Segment Display Clock & Info Panel
+# ESP32 14-Segment Ticker Board
 
 A custom-built ESP32-based project using 14-segment hex displays to show real-time data like a clock, stock prices, temperature, and a chess timer.
+<img src="Photos/finished.jpg" width="800" height="400" />
 
 ## What It Does
 - Pulls real-time data via Wi-Fi
@@ -17,7 +18,6 @@ A custom-built ESP32-based project using 14-segment hex displays to show real-ti
 ## Photos
 Finished Board!
 
-<img src="Photos/finished.jpg" width="800" height="400" />
 
 Shows live temperature readings in [temperature testing video](Photos/TempTesting.mp4) and accurate clock in [clock testing video](Photos/ClockTesting.mp4)
 
@@ -25,10 +25,11 @@ Shows live temperature readings in [temperature testing video](Photos/TempTestin
 ![Clock Time](Photos/ClockTestingGif.gif)
 
 Schematic and Layout
-![Schematic](Photos/TickerPCBSchematic.png)
 
+<img src="Photos/TickerPCBSchematic.png" width="1000" height="600" />
 
-![Layout](Photos/LayoutKiCad.png)
+<img src="Photos/LayoutKiCad.png" width="1000" height="450" />
+
 ## Code Overview
 Firmware is written in C++ and manages:
 - I2C communication with display drivers
@@ -36,8 +37,10 @@ Firmware is written in C++ and manages:
 - Wi-Fi data fetching
 - State switching between display modes
 
+Buttons presses trigger interrupts which are then handled and change state machines to change or move within modes.
+
 ## 📚 Notes
-I designed and built this project as a personal challenge to deepen my embedded systems skills. Though no schematics are available, the board and code were developed from scratch, and photos illustrate the final product.
+I designed and built this project as a personal challenge to deepen my embedded systems skills. The board and code were developed from scratch, and photos illustrate the final product.
 
 ## 📝 License
 MIT
