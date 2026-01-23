@@ -85,8 +85,16 @@ void setup() {
   prev_buttons = readGPIOExpander();
   writeDisplay("---HJ---");
   delay(1000);
+
+  // Test, set up gpio14
+  pinMode(14, OUTPUT);
+  digitalWrite(14, LOW);
 }
 
 void loop() {
-  state_machine();
+  digitalWrite(14, HIGH);
+  //state_machine();
+  delay(1500);
+  digitalWrite(14, LOW);
+  delay(1500);
 }
