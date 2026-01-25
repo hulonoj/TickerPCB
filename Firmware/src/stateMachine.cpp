@@ -8,6 +8,7 @@ volatile extern bool GLOBAL_BUTTONS_DATA[8];
 volatile extern uint8 GLOBAL_STATE;
 volatile extern bool GLOBAL_BUTTONS_UPDATED;
 volatile extern bool GLOBAL_ENTER_HIT;
+volatile extern bool GLOBAL_NORMAL_BUTTON_HIT;
 volatile extern uint8 GLOBAL_LOCAL_STATE;
 extern bool GLOBAL_WIFI_CONNECTED;
 
@@ -224,12 +225,6 @@ typedef void (*funcptr)(void);
 // - buttons updated flag
 
 void STATE_Stock(){
-  // in here will be anothe state machine
-  // state 1: wifi, unless already set up
-  // STATE #1
-  //static int (*localState) = 0;
-  static bool wifi_has_been_set_up = false;
-
   volatile uint8* localState = &GLOBAL_LOCAL_STATE;
 
   switch(*localState){
@@ -244,22 +239,24 @@ void STATE_Stock(){
       if(!GLOBAL_ENTER_HIT){break;}
       GLOBAL_ENTER_HIT = false;
       (*localState)++;
-
+      
     case 2: // WIFI SETUP STATE
       if(GLOBAL_WIFI_CONNECTED){
+        clearDisplay();
         (*localState)++;
         break;
       }
-
+      
       //set up wifi
       if(!setup_Wifi()){
         delay(2000);
         (*localState)=0;
         break;
       }
-
+      
       // Wifi is now set up, move on to next state.
       delay(1000);
+      clearDisplay();
       (*localState)++;
     case 3: // Run stock selector to pick stock ticker
       stock_selector();
@@ -305,6 +302,12 @@ void STATE_Temperature(){
         break;
       }
 
+      if(GLOBAL_NORMAL_BUTTON_HIT){//move to next state
+        GLOBAL_NORMAL_BUTTON_HIT = false;
+        (*localState)++;
+        break;
+      }
+
       // otherwise, display temp in C
       if(millis()-initTime > 1000){
         initTime = millis();
@@ -314,6 +317,11 @@ void STATE_Temperature(){
     case 3:
       if(GLOBAL_ENTER_HIT){//move to previous state
           GLOBAL_ENTER_HIT = false;
+          (*localState)--;
+          break;
+      }
+      if(GLOBAL_NORMAL_BUTTON_HIT){//move to previous state
+          GLOBAL_NORMAL_BUTTON_HIT = false;
           (*localState)--;
           break;
       }
@@ -588,13 +596,9 @@ void STATE_Clock() {
         clearDisplay();
         delay(100);
       }
-      if (GLOBAL_BUTTONS_UPDATED){
-        for(int buttonNumber = 0; buttonNumber <= 5; buttonNumber++){
-          if(GLOBAL_BUTTONS_DATA[buttonNumber]){
-            // If we hit any button, toggle military time
-            militaryTime = !militaryTime;
-          }
-        }
+      if (GLOBAL_NORMAL_BUTTON_HIT){
+        GLOBAL_NORMAL_BUTTON_HIT = false;
+        militaryTime = !militaryTime;
       }
       break;
 

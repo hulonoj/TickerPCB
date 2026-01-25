@@ -21,6 +21,7 @@ volatile uint8 GLOBAL_LOCAL_STATE = 0;
 
 volatile bool GLOBAL_ENTER_HIT = false;
 volatile bool GLOBAL_BUTTONS_UPDATED = false;
+volatile bool GLOBAL_NORMAL_BUTTON_HIT = false;
 volatile bool GLOBAL_BUTTONS_DATA[8] = {false};
 
 bool GLOBAL_WIFI_CONNECTED = false;
@@ -46,6 +47,8 @@ IRAM_ATTR void buttonPoll() {
           GLOBAL_LOCAL_STATE = 0;
         } else if (i == 7) { // Enter button
           GLOBAL_ENTER_HIT = true;
+        }else{
+          GLOBAL_NORMAL_BUTTON_HIT = true;
         }
       }
     }
