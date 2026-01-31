@@ -164,7 +164,9 @@ String wifi_stock_price(String stockTicker){
 
   Serial.println(line);
 
-  if (line.indexOf("API rate limit")){
+  if (line.indexOf("API rate limit") > 0){
+    Serial.print("line.indexOf(\"API rate limit\"):");
+    Serial.println(line.indexOf("API rate limit"));
     Serial.println(">>> API rate limit exceeded.");
     return "APILIMIT";
   }
