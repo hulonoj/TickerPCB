@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Adafruit_NeoPixel.h>
 #include <string.h>
 #include <iostream>
 #include "Wire.h"
@@ -7,6 +8,7 @@
 #include "gpioExpander.h"
 #include "max6955.h"
 #include "stateMachine.h"
+#include "neoPixels.h"
 
 // ------------------------
 // Global Variables
@@ -88,8 +90,14 @@ void setup() {
   prev_buttons = readGPIOExpander();
   writeDisplay("---HJ---");
   delay(1000);
+
+  // Initialize NeoPixels
+  neopixels.init();
+  neopixels.setAll(COLOR_GREEN, DEFAULT_BRIGHTNESS);
+  neopixels.setSpeed(50);  // Update every 50ms
 }
 
 void loop() {
   state_machine();
+  neopixels.update();
 }

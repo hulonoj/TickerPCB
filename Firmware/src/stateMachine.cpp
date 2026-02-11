@@ -3,6 +3,7 @@
 #include <networkSettings.h>
 #include <mcp9808.h>
 #include <string>
+#include "neoPixels.h"
 
 volatile extern bool GLOBAL_BUTTONS_DATA[8];
 volatile extern uint8 GLOBAL_STATE;
@@ -231,6 +232,7 @@ void STATE_Stock(){
   
     case 0: // Write Stonks
       clearDisplay();
+      neopixels.setPattern(PATTERN_SPARKLE);
       writeDisplay("Stonks");
       delay(100);
       (*localState)++;
@@ -288,6 +290,7 @@ void STATE_Temperature(){
   switch(*localState){
     case 0: // Landing in Temp, set and fall
       clearDisplay();
+      neopixels.setPattern(PATTERN_SCANNER);
       writeDisplay("Temp");
       delay(100);
       (*localState)++;
@@ -349,6 +352,7 @@ void STATE_ChessClock() {
   switch (*localState) {
     case 0: // Initial landing
       clearDisplay();
+      neopixels.setPattern(PATTERN_COLOR_WIPE);
       writeDisplay("Chess");
       delay(100);
       (*localState)++;
@@ -451,6 +455,7 @@ void STATE_Clock() {
   switch (*localState) {
     case 0: // Startup
       clearDisplay();
+      neopixels.setPattern(PATTERN_THEATER_CHASE);
       writeDisplay("Clock");
       delay(100);
       (*localState)++;
