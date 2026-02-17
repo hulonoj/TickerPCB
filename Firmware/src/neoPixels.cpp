@@ -18,7 +18,7 @@ void NeoPixelManager::init() {
   
   currentPattern = PATTERN_NONE;
   patternColor = COLOR_WHITE;
-  updateInterval = 50;  // Default 50ms between updates
+  updateInterval = 150;  // Default 50ms between updates
   lastUpdate = 0;
   patternStep = 0;
 }

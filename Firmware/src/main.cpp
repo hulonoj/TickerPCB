@@ -26,7 +26,7 @@ volatile bool GLOBAL_BUTTONS_UPDATED = false;
 volatile bool GLOBAL_NORMAL_BUTTON_HIT = false;
 volatile bool GLOBAL_BUTTONS_DATA[8] = {false};
 
-bool GLOBAL_WIFI_CONNECTED = false;
+WifiState GLOBAL_WIFI_STATE = WIFI_IDLE;
 
 // ------------------------
 // Interrupt Handler

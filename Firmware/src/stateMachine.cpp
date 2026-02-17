@@ -11,7 +11,7 @@ volatile extern bool GLOBAL_BUTTONS_UPDATED;
 volatile extern bool GLOBAL_ENTER_HIT;
 volatile extern bool GLOBAL_NORMAL_BUTTON_HIT;
 volatile extern uint8 GLOBAL_LOCAL_STATE;
-extern bool GLOBAL_WIFI_CONNECTED;
+extern WifiState GLOBAL_WIFI_STATE;
 
 unsigned static long initTime = millis();
 unsigned static long chessTime = millis();
@@ -232,7 +232,7 @@ void STATE_Stock(){
   
     case 0: // Write Stonks
       clearDisplay();
-      neopixels.setPattern(PATTERN_SPARKLE);
+      neopixels.setPattern(PATTERN_SPARKLE, COLOR_GREEN);
       writeDisplay("Stonks");
       delay(100);
       (*localState)++;
@@ -243,23 +243,24 @@ void STATE_Stock(){
       (*localState)++;
       
     case 2: // WIFI SETUP STATE
-      if(GLOBAL_WIFI_CONNECTED){
+      //set up wifi
+      if(GLOBAL_WIFI_STATE != WIFI_CONNECTED &&
+         GLOBAL_WIFI_STATE != WIFI_FAILED){
+        setup_Wifi();
+      }
+    
+      if(GLOBAL_WIFI_STATE == WIFI_CONNECTED){
         clearDisplay();
         (*localState)++;
         break;
       }
       
-      //set up wifi
-      if(!setup_Wifi()){
-        delay(2000);
+      if(GLOBAL_WIFI_STATE == WIFI_FAILED){
         (*localState)=0;
         break;
       }
-      
-      // Wifi is now set up, move on to next state.
-      delay(1000);
-      clearDisplay();
-      (*localState)++;
+
+      break;
     case 3: // Run stock selector to pick stock ticker
       stock_selector();
 
@@ -290,7 +291,7 @@ void STATE_Temperature(){
   switch(*localState){
     case 0: // Landing in Temp, set and fall
       clearDisplay();
-      neopixels.setPattern(PATTERN_SCANNER);
+      neopixels.setPattern(PATTERN_SCANNER, COLOR_RED);
       writeDisplay("Temp");
       delay(100);
       (*localState)++;
@@ -352,7 +353,7 @@ void STATE_ChessClock() {
   switch (*localState) {
     case 0: // Initial landing
       clearDisplay();
-      neopixels.setPattern(PATTERN_COLOR_WIPE);
+      neopixels.setPattern(PATTERN_COLOR_WIPE, COLOR_ORANGE);
       writeDisplay("Chess");
       delay(100);
       (*localState)++;
@@ -455,7 +456,7 @@ void STATE_Clock() {
   switch (*localState) {
     case 0: // Startup
       clearDisplay();
-      neopixels.setPattern(PATTERN_THEATER_CHASE);
+      neopixels.setPattern(PATTERN_THEATER_CHASE, COLOR_PURPLE);
       writeDisplay("Clock");
       delay(100);
       (*localState)++;
@@ -467,21 +468,25 @@ void STATE_Clock() {
       (*localState)++;
 
     case 2: // WIFI SETUP STATE
-      if(GLOBAL_WIFI_CONNECTED){
+    
+      //set up wifi
+      if(GLOBAL_WIFI_STATE != WIFI_CONNECTED &&
+         GLOBAL_WIFI_STATE != WIFI_FAILED){
+        setup_Wifi();
+      }
+      
+      if(GLOBAL_WIFI_STATE == WIFI_CONNECTED){
         (*localState)++;
         break;
       }
 
-      //set up wifi
-      if(!setup_Wifi()){
+      if(GLOBAL_WIFI_STATE == WIFI_FAILED){
         delay(2000);
         (*localState)=0;
-        break;
+          break;
       }
 
-      // wifi is now enabled, move on to next state.
-      delay(2000);
-      (*localState)++;
+      break;
 
     case 3:
       // Write "EST" to the displays

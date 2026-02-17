@@ -14,7 +14,13 @@ unsigned static long initTime = millis();
 
 const long ESTOffsetInSecondsFromUTC = -5 * 3600; //3600 * -5 = EST
 
-extern bool GLOBAL_WIFI_CONNECTED;
+extern WifiState GLOBAL_WIFI_STATE;
+
+WifiState wifiState = WIFI_IDLE;
+
+unsigned static long wifiStartTime = 0;
+unsigned static long wifiBlinkTimer = 0;
+bool wifiBlinkState = false;
 
 //Time info
 
@@ -195,33 +201,48 @@ String wifi_stock_price(String stockTicker){
   return format_stock_price(line);
 }
 
-bool setup_Wifi(){
-  //Set up wifi
-  writeDisplay("WIFI O");
-  WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
-  delay(1000);
-  WiFi.mode(WIFI_STA); 
-  WiFi.begin(CREDENTIALS_WIFI_SSID, CREDENTIALS_WIFI_PASSWORD); //Connect to your WiFi router
+void setup_Wifi() {
+  if(GLOBAL_WIFI_STATE == WIFI_IDLE){
+    Serial.println("Setting up Wifi?");
 
-  initTime = millis();
+    WiFi.mode(WIFI_OFF);
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(CREDENTIALS_WIFI_SSID, CREDENTIALS_WIFI_PASSWORD);
 
-  while (WiFi.status() != WL_CONNECTED && millis()-initTime < 6000) {
-    delay(250);
-    writeDisplay("WIFI 0");
-    delay(250);
-    writeDisplay("WIFI O");
-    Serial.println("Connecting");
+    Serial.println("Setting wifi state to connecting");
+    wifiStartTime = millis();
+
+    GLOBAL_WIFI_STATE = WIFI_CONNECTING;
   }
 
-  if(WiFi.status() != WL_CONNECTED){
-    writeDisplay("FAILURE");
-    return false;
-  }else{
-    writeDisplay("SUCCESS");
-    GLOBAL_WIFI_CONNECTED = true;
-    delay(500);
+  if (GLOBAL_WIFI_STATE == WIFI_CONNECTING) {
+
+    // Blink every 250ms
+    if (millis() - wifiBlinkTimer >= 250) {
+      wifiBlinkTimer = millis();
+      wifiBlinkState = !wifiBlinkState;
+
+      if (wifiBlinkState)
+        writeDisplay("WIFI O");
+      else
+        writeDisplay("WIFI 0");
+    }
+
+    // Check connection
+    if (WiFi.status() == WL_CONNECTED) {
+      writeDisplay("SUCCESS");
+      Serial.println("CONNECTED TO WIFI");
+      timeClient.begin();
+      GLOBAL_WIFI_STATE = WIFI_CONNECTED;
+    }
+
+    // Timeout after 10 seconds
+    else if (millis() - wifiStartTime > 10000) {
+      writeDisplay("FAILURE");
+      Serial.println("Failed to connect TO WIFI");
+      GLOBAL_WIFI_STATE = WIFI_FAILED;
+    }
   }
-  Serial.println("CONNECTED TO WIFI");
-  timeClient.begin();
-  return true;
+
+  if (GLOBAL_WIFI_STATE == WIFI_CONNECTED) Serial.println("Already connected to wifi");
 }

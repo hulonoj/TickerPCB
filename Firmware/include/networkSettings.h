@@ -21,7 +21,15 @@ extern const char fingerprint[];
 extern WiFiUDP ntpUDP;
 extern NTPClient timeClient;//(ntpUDP, "north-america.pool.ntp.org", utcOffsetInSeconds);
 
-bool setup_Wifi();
+// Wifi States
+enum WifiState {
+  WIFI_IDLE,
+  WIFI_CONNECTING,
+  WIFI_CONNECTED,
+  WIFI_FAILED
+};
+
+void setup_Wifi();
 String format_stock_price(String stockprice);
 String wifi_stock_price(String stockTicker);
 #endif
